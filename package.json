@@ -1,0 +1,34 @@
+{
+  "name": "react-native-dates",
+  "version": "1.0.0",
+  "description": "Date and daterange picker for React Native (iOS and Android)",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/werein/react-native-dates.git"
+  },
+  "keywords": [
+    "react",
+    "react",
+    "native",
+    "datepicker",
+    "calendar",
+    "daterange",
+    "picker"
+  ],
+  "author": "We're in",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/werein/react-native-dates/issues"
+  },
+  "homepage": "https://github.com/werein/react-native-dates#readme",
+  "peerDependencies": {
+    "moment": "^2.15.1",
+    "moment-range": "^2.2.0",
+    "react": "^15.3.2",
+    "react-native": "^0.35.0"
+  }
+}
