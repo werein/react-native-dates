@@ -4,7 +4,7 @@ __React Native Calender for iOS and Android__
 
 ## Example
 
-In this example we disabled dates back in history and on Sundays and showed selected date bellow 
+In this example we disabled dates back in history and on Sundays and showed selected date bellow
 
 ```javascript
 /**
@@ -24,25 +24,46 @@ import Dates from 'react-native-dates';
 
 export default class ReactNativeDatesDemo extends Component {
   state = {
-    date: null
+    date: null,
+    focus: 'startDate',
+    startDate: null,
+    endDate: null
   }
+
 
   render() {
     const isDateBlocked = (date) =>
       date.format('dddd') === 'Sunday';
 
-    const onDatesChange = (date) =>
-      this.setState({ date });
+    const onDatesChange = ({ startDate, endDate, focusedInput }) =>
+      this.setState({ ...this.state, focus: focusedInput }, () =>
+        this.setState({ ...this.state, startDate, endDate })
+      );
+
+    const onDateChange = ({ date }) =>
+      this.setState({ ...this.state, date });
+
 
     return (
       <View style={styles.container}>
         <Dates
-          date={this.state.date}
           onDatesChange={onDatesChange}
+          isDateBlocked={isDateBlocked}
+          startDate={this.state.startDate}
+          endDate={this.state.endDate}
+          focusedInput={this.state.focus}
+          range
+        />
+
+        <Dates
+          date={this.state.date}
+          onDatesChange={onDateChange}
           isDateBlocked={isDateBlocked}
         />
 
-      {this.state.date && <Text style={styles.date}>{this.state.date.format('LL')}</Text>}
+      {this.state.date && <Text style={styles.date}>{this.state.date && this.state.date.format('LL')}</Text>}
+      <Text style={[styles.date, this.state.focus === 'startDate' && styles.focused]}>{this.state.startDate && this.state.startDate.format('LL')}</Text>
+      <Text style={[styles.date, this.state.focus === 'endDate' && styles.focused]}>{this.state.endDate && this.state.endDate.format('LL')}</Text>
       </View>
     );
   }
@@ -56,6 +77,9 @@ const styles = StyleSheet.create({
   },
   date: {
     marginTop: 50
+  },
+  focused: {
+    color: 'blue'
   }
 });
 
@@ -65,4 +89,3 @@ AppRegistry.registerComponent('ReactNativeDatesDemo', () => ReactNativeDatesDemo
 ## Demo
 
 <img src="http://i.giphy.com/YUqyKQoeNs2v6.gif">
-
