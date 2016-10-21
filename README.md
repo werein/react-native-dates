@@ -2,6 +2,12 @@
 
 __React Native Calender for iOS and Android__
 
+## Demo
+
+<img src="http://i.giphy.com/YUqyKQoeNs2v6.gif">
+<img src="http://i.giphy.com/130cHgOE0K5TCU.gif">
+
+
 ## Example
 
 In this example we disabled dates back in history and on Sundays and showed selected date bellow
@@ -85,9 +91,3 @@ const styles = StyleSheet.create({
 
 AppRegistry.registerComponent('ReactNativeDatesDemo', () => ReactNativeDatesDemo);
 ```
-
-## Demo
-
-<img src="http://i.giphy.com/YUqyKQoeNs2v6.gif">
-<img src="http://i.giphy.com/130cHgOE0K5TCU.gif">
-
