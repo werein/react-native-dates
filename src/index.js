@@ -51,18 +51,54 @@ const styles = StyleSheet.create({
   }
 })
 
-export const Week = ({ startOfWeek, currentDate, focusedMonth, date, onDatesChange, isDateBlocked }) => {
+const dates = (start, end, focusedInput) => {
+  if (focusedInput === 'startDate') {
+    if (start && end) {
+      return({ startDate: start, endDate: null, focusedInput: 'endDate' });
+    } else {
+      return({ startDate: start, endDate: end, focusedInput: 'endDate' });
+    }
+  }
+
+  if (focusedInput === 'endDate') {
+    if (end.isBefore(start)) {
+      return({ startDate: end, endDate: null, focusedInput: 'endDate' });
+    } else {
+      return({ startDate: start, endDate: end, focusedInput: 'startDate' });
+    }
+  }
+}
+
+export const Week = ({ startOfWeek, currentDate, focusedMonth, date, startDate, endDate, focusedInput, onDatesChange, isDateBlocked, range }) => {
   const days = [];
   const endOfWeek = startOfWeek.clone().endOf('isoweek');
   const today = currentDate.clone().startOf('day');
 
   moment.range(startOfWeek, endOfWeek).by('days', (day) => {
-    const onPress = () => onDatesChange(day);
+    const onPress = () => {
+      if (range) {
+        const start = focusedInput === 'startDate' ? day : startDate;
+        const end = focusedInput === 'endDate' ? day : endDate;
+        onDatesChange(dates(start, end, focusedInput));
+      } else {
+        onDatesChange({ date: day });
+      }
+    }
 
-    const isFutureDate = day >= today;
+    const isDateSelected = () => {
+      if (range) {
+        if (startDate && endDate) {
+          return day.isSameOrAfter(startDate) && day.isSameOrBefore(endDate);
+        }
+        return (startDate && day.isSame(startDate)) || (endDate && day.isSame(endDate));
+      }
+      return date && day.isSame(date);
+    }
+
+    const isFutureDate = day.isSameOrAfter(today);
     const isCurrentMonth = day.month() === focusedMonth.month();
     const isBlocked = isDateBlocked(day);
-    const isSelected = date && moment(date).format('LL') === day.format('LL');
+    const isSelected = isDateSelected();
     const isDisabled = !isFutureDate || !isCurrentMonth || isBlocked;
 
     const style = [styles.day, isDisabled && styles.dayBlocked, isSelected && styles.daySelected];
@@ -85,7 +121,7 @@ export const Week = ({ startOfWeek, currentDate, focusedMonth, date, onDatesChan
   );
 };
 
-export const Month = ({ focusedMonth, currentDate, date, onDatesChange, isDateBlocked }) => {
+export const Month = ({ focusedMonth, currentDate, date, startDate, endDate, focusedInput, onDatesChange, isDateBlocked, range }) => {
   const dayNames = [];
   const weeks = [];
   const startOfMonth = focusedMonth.clone().startOf('month').startOf('isoweek');
@@ -110,6 +146,10 @@ export const Month = ({ focusedMonth, currentDate, date, onDatesChange, isDateBl
         date={date}
         onDatesChange={onDatesChange}
         isDateBlocked={isDateBlocked}
+        startDate={startDate}
+        endDate={endDate}
+        focusedInput={focusedInput}
+        range={range}
       />
     );
   });
@@ -156,6 +196,10 @@ export default class Dates extends Component {
           date={this.props.date}
           onDatesChange={this.props.onDatesChange}
           isDateBlocked={this.props.isDateBlocked}
+          startDate={this.props.startDate}
+          endDate={this.props.endDate}
+          focusedInput={this.props.focusedInput}
+          range={this.props.range}
         />
       </View>
     )
