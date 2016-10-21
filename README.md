@@ -89,3 +89,5 @@ AppRegistry.registerComponent('ReactNativeDatesDemo', () => ReactNativeDatesDemo
 ## Demo
 
 <img src="http://i.giphy.com/YUqyKQoeNs2v6.gif">
+<img src="http://i.giphy.com/130cHgOE0K5TCU.gif">
+
