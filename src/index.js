@@ -1,3 +1,5 @@
+// @flow
+
 import React, { Component } from 'react';
 import {
   Text,
@@ -7,6 +9,41 @@ import {
 } from 'react-native';
 import moment from 'moment';
 import 'moment-range';
+
+type DatesType = {
+  range: boolean,
+  date: ?moment,
+  startDate: ?moment,
+  endDate: ?moment,
+  focusedInput: 'startDate' | 'endDate',
+  onDatesChange: (date: { date?: ?moment, startDate?: ?moment, endDate?: ?moment }) => void,
+  isDateBlocked: (date: moment) => boolean
+}
+
+type MonthType = {
+  range: boolean,
+  date: ?moment,
+  startDate: ?moment,
+  endDate: ?moment,
+  focusedInput: 'startDate' | 'endDate',
+  currentDate: moment,
+  focusedMonth: moment,
+  onDatesChange: (date: { date?: ?moment, startDate?: ?moment, endDate?: ?moment }) => void,
+  isDateBlocked: (date: moment) => boolean
+}
+
+type WeekType = {
+  range: boolean,
+  date: ?moment,
+  startDate: ?moment,
+  endDate: ?moment,
+  focusedInput: 'startDate' | 'endDate',
+  currentDate: moment,
+  focusedMonth: moment,
+  startOfWeek: moment,
+  onDatesChange: (date: { date?: ?moment, startDate?: ?moment, endDate?: ?moment }) => void,
+  isDateBlocked: (date: moment) => boolean
+}
 
 const styles = StyleSheet.create({
   calendar: {
@@ -49,32 +86,45 @@ const styles = StyleSheet.create({
   daySeletedText: {
     color: 'rgb(252, 252, 252)'
   }
-})
+});
 
-const dates = (start, end, focusedInput) => {
+const dates = (startDate: ?moment, endDate: ?moment, focusedInput: 'startDate' | 'endDate') => {
   if (focusedInput === 'startDate') {
-    if (start && end) {
-      return({ startDate: start, endDate: null, focusedInput: 'endDate' });
-    } else {
-      return({ startDate: start, endDate: end, focusedInput: 'endDate' });
+    if (startDate && endDate) {
+      return ({ startDate, endDate: null, focusedInput: 'endDate' });
     }
+    return ({ startDate, endDate, focusedInput: 'endDate' });
   }
 
   if (focusedInput === 'endDate') {
-    if (end.isBefore(start)) {
-      return({ startDate: end, endDate: null, focusedInput: 'endDate' });
-    } else {
-      return({ startDate: start, endDate: end, focusedInput: 'startDate' });
+    if (endDate && startDate && endDate.isBefore(startDate)) {
+      return ({ startDate: endDate, endDate: null, focusedInput: 'endDate' });
     }
+    return ({ startDate, endDate, focusedInput: 'startDate' });
   }
-}
 
-export const Week = ({ startOfWeek, currentDate, focusedMonth, date, startDate, endDate, focusedInput, onDatesChange, isDateBlocked, range }) => {
+  return ({ startDate, endDate, focusedInput });
+};
+
+export const Week = (props: WeekType) => {
+  const {
+    range,
+    date,
+    startDate,
+    endDate,
+    focusedInput,
+    currentDate,
+    focusedMonth,
+    startOfWeek,
+    onDatesChange,
+    isDateBlocked
+  } = props;
+
   const days = [];
   const endOfWeek = startOfWeek.clone().endOf('isoweek');
   const today = currentDate.clone().startOf('day');
 
-  moment.range(startOfWeek, endOfWeek).by('days', (day) => {
+  moment.range(startOfWeek, endOfWeek).by('days', (day: moment) => {
     const onPress = () => {
       if (range) {
         const start = focusedInput === 'startDate' ? day : startDate;
@@ -83,7 +133,7 @@ export const Week = ({ startOfWeek, currentDate, focusedMonth, date, startDate, 
       } else {
         onDatesChange({ date: day });
       }
-    }
+    };
 
     const isDateSelected = () => {
       if (range) {
@@ -93,7 +143,7 @@ export const Week = ({ startOfWeek, currentDate, focusedMonth, date, startDate, 
         return (startDate && day.isSame(startDate)) || (endDate && day.isSame(endDate));
       }
       return date && day.isSame(date);
-    }
+    };
 
     const isFutureDate = day.isSameOrAfter(today);
     const isCurrentMonth = day.month() === focusedMonth.month();
@@ -101,8 +151,17 @@ export const Week = ({ startOfWeek, currentDate, focusedMonth, date, startDate, 
     const isSelected = isDateSelected();
     const isDisabled = !isFutureDate || !isCurrentMonth || isBlocked;
 
-    const style = [styles.day, isDisabled && styles.dayBlocked, isSelected && styles.daySelected];
-    const styleText = [styles.dayText, isDisabled && styles.dayDisabledText, isSelected && styles.daySeletedText];
+    const style = [
+      styles.day,
+      isDisabled && styles.dayBlocked,
+      isSelected && styles.daySelected
+    ];
+
+    const styleText = [
+      styles.dayText,
+      isDisabled && styles.dayDisabledText,
+      isSelected && styles.daySeletedText
+    ];
 
     days.push(
       <TouchableOpacity
@@ -121,14 +180,26 @@ export const Week = ({ startOfWeek, currentDate, focusedMonth, date, startDate, 
   );
 };
 
-export const Month = ({ focusedMonth, currentDate, date, startDate, endDate, focusedInput, onDatesChange, isDateBlocked, range }) => {
+export const Month = (props: MonthType) => {
+  const {
+    range,
+    date,
+    startDate,
+    endDate,
+    focusedInput,
+    currentDate,
+    focusedMonth,
+    onDatesChange,
+    isDateBlocked
+  } = props;
+
   const dayNames = [];
   const weeks = [];
   const startOfMonth = focusedMonth.clone().startOf('month').startOf('isoweek');
-  const endOfMonth = focusedMonth.clone().endOf('month')
+  const endOfMonth = focusedMonth.clone().endOf('month');
   const weekRange = moment.range(currentDate.clone().startOf('isoweek'), currentDate.clone().endOf('isoweek'));
 
-  weekRange.by('days', (day) => {
+  weekRange.by('days', (day: moment) => {
     dayNames.push(
       <Text key={day.date()} style={styles.dayName}>
         {day.format('ddd')}
@@ -136,20 +207,20 @@ export const Month = ({ focusedMonth, currentDate, date, startDate, endDate, foc
     );
   });
 
-  moment.range(startOfMonth, endOfMonth).by('weeks', (week) => {
+  moment.range(startOfMonth, endOfMonth).by('weeks', (week: moment) => {
     weeks.push(
       <Week
         key={week}
-        startOfWeek={week}
-        currentDate={currentDate}
-        focusedMonth={focusedMonth}
+        range={range}
         date={date}
-        onDatesChange={onDatesChange}
-        isDateBlocked={isDateBlocked}
         startDate={startDate}
         endDate={endDate}
         focusedInput={focusedInput}
-        range={range}
+        currentDate={currentDate}
+        focusedMonth={focusedMonth}
+        startOfWeek={week}
+        onDatesChange={onDatesChange}
+        isDateBlocked={isDateBlocked}
       />
     );
   });
@@ -162,22 +233,23 @@ export const Month = ({ focusedMonth, currentDate, date, startDate, endDate, foc
       {weeks}
     </View>
   );
-}
+};
 
 export default class Dates extends Component {
   state = {
     currentDate: moment(),
-    focusedMonth: moment().startOf("month")
+    focusedMonth: moment().startOf('month')
   }
+  props: DatesType;
 
   render() {
     const previousMonth = () => {
       this.setState({ focusedMonth: this.state.focusedMonth.add(-1, 'M') });
-    }
+    };
 
     const nextMonth = () => {
       this.setState({ focusedMonth: this.state.focusedMonth.add(1, 'M') });
-    }
+    };
 
     return (
       <View style={styles.calendar}>
@@ -191,17 +263,17 @@ export default class Dates extends Component {
           </TouchableOpacity>
         </View>
         <Month
-          currentDate={this.state.currentDate}
-          focusedMonth={this.state.focusedMonth}
+          range={this.props.range}
           date={this.props.date}
-          onDatesChange={this.props.onDatesChange}
-          isDateBlocked={this.props.isDateBlocked}
           startDate={this.props.startDate}
           endDate={this.props.endDate}
           focusedInput={this.props.focusedInput}
-          range={this.props.range}
+          currentDate={this.state.currentDate}
+          focusedMonth={this.state.focusedMonth}
+          onDatesChange={this.props.onDatesChange}
+          isDateBlocked={this.props.isDateBlocked}
         />
       </View>
-    )
+    );
   }
 }

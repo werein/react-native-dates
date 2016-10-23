@@ -1,0 +1,8 @@
+{
+  "parser": "babel-eslint",
+  "extends": "airbnb",
+  "rules": {
+    "comma-dangle": 0,
+    "react/jsx-filename-extension": 0
+  }
+}
