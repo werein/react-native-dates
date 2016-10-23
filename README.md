@@ -2,6 +2,20 @@
 
 __React Native Calender for iOS and Android__
 
+## API
+
+```javascript
+type DatesType = {
+  range: boolean,
+  date: ?moment,
+  startDate: ?moment,
+  endDate: ?moment,
+  focusedInput: 'startDate' | 'endDate',
+  onDatesChange: (date: { date?: ?moment, startDate?: ?moment, endDate?: ?moment }) => void,
+  isDateBlocked: (date: moment) => boolean
+}
+```
+
 ## Demo
 
 <img src="http://i.giphy.com/YUqyKQoeNs2v6.gif">
