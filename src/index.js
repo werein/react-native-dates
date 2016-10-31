@@ -50,7 +50,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(255, 255, 255)'
   },
   heading: {
-    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 20
