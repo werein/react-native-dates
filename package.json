@@ -26,7 +26,7 @@
     "url": "https://github.com/werein/react-native-dates/issues"
   },
   "homepage": "https://github.com/werein/react-native-dates#readme",
-  "dependencies": {
+  "peerDependencies": {
     "moment": "^2.15.1",
     "moment-range": "^2.2.0",
     "react": "^15.3.2",
