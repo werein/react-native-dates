@@ -4,6 +4,8 @@ environment:
 install:
   - ps: Install-Product node $env:nodejs_version
   - npm install
+  - npm install -g npm-install-peers
+  - npm-install-peers
 
 test_script:
   - node --version
