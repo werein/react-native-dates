@@ -1,7 +1,7 @@
 # React Native Dates
 [![Build Status](https://travis-ci.org/werein/react-native-dates.svg)](https://travis-ci.org/werein/react-native-dates)[![Windows Build Status](https://ci.appveyor.com/api/projects/status/github/werein/react-native-dates?branch=master&svg=true)](https://ci.appveyor.com/project/jirikolarik/react-native-dates) [![Code Climate](https://codeclimate.com/github/werein/react-native-dates/badges/gpa.svg)](https://codeclimate.com/github/werein/react-native-dates) [![Issue Count](https://codeclimate.com/github/werein/react-native-dates/badges/issue_count.svg)](https://codeclimate.com/github/werein/react-native-dates)
 
-__React Native Calender for iOS and Android__
+__React Native Date and date range picker / calendar for iOS and Android__
 
 ## API
 
