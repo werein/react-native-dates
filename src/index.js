@@ -10,6 +10,7 @@ import 'moment-range';
 
 type DatesType = {
   range: boolean,
+  history: boolean,
   date: ?moment,
   startDate: ?moment,
   endDate: ?moment,
@@ -20,6 +21,7 @@ type DatesType = {
 
 type MonthType = {
   range: boolean,
+  history: boolean,
   date: ?moment,
   startDate: ?moment,
   endDate: ?moment,
@@ -32,6 +34,7 @@ type MonthType = {
 
 type WeekType = {
   range: boolean,
+  history: boolean,
   date: ?moment,
   startDate: ?moment,
   endDate: ?moment,
@@ -106,6 +109,7 @@ const dates = (startDate: ?moment, endDate: ?moment, focusedInput: 'startDate' |
 export const Week = (props: WeekType) => {
   const {
     range,
+    history,
     date,
     startDate,
     endDate,
@@ -135,18 +139,18 @@ export const Week = (props: WeekType) => {
     const isDateSelected = () => {
       if (range) {
         if (startDate && endDate) {
-          return day.isSameOrAfter(startDate) && day.isSameOrBefore(endDate);
+          return day.isSameOrAfter(startDate, 'day') && day.isSameOrBefore(endDate, 'day');
         }
-        return (startDate && day.isSame(startDate)) || (endDate && day.isSame(endDate));
+        return (startDate && day.isSame(startDate, 'day')) || (endDate && day.isSame(endDate, 'day'));
       }
-      return date && day.isSame(date);
+      return date && day.isSame(date, 'day');
     };
 
     const isFutureDate = day.isSameOrAfter(today);
     const isCurrentMonth = day.month() === focusedMonth.month();
     const isBlocked = isDateBlocked(day);
     const isSelected = isDateSelected();
-    const isDisabled = !isFutureDate || !isCurrentMonth || isBlocked;
+    const isDisabled = (!isFutureDate && !history) || !isCurrentMonth || isBlocked;
 
     const style = [
       styles.day,
@@ -180,6 +184,7 @@ export const Week = (props: WeekType) => {
 export const Month = (props: MonthType) => {
   const {
     range,
+    history,
     date,
     startDate,
     endDate,
@@ -208,6 +213,7 @@ export const Month = (props: MonthType) => {
     weeks.push(
       <Week
         key={week}
+        history={history}
         range={range}
         date={date}
         startDate={startDate}
@@ -261,6 +267,7 @@ export default class Dates extends Component {
         </View>
         <Month
           range={this.props.range}
+          history={this.props.history}
           date={this.props.date}
           startDate={this.props.startDate}
           endDate={this.props.endDate}
