@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jdcc2/react-native-dates.git"
+    "url": "git+https://github.com/werein/react-native-dates.git"
   },
   "keywords": [
     "react",
@@ -20,17 +20,15 @@
     "daterange",
     "picker"
   ],
-  "author": "JH Kuipers",
+  "author": "We're in",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jdcc2/react-native-dates/issues"
+    "url": "https://github.com/werein/react-native-dates/issues"
   },
-  "homepage": "https://github.com/jdcc2/react-native-dates.git#readme",
-  "dependencies": {
-      "moment": "^2.15.1",
-      "moment-range": "^2.2.0"
-  },
+  "homepage": "https://github.com/werein/react-native-dates#readme",
   "peerDependencies": {
+    "moment": "^2.15.1",
+    "moment-range": "^2.2.0",
     "react": "^15.3.2",
     "react-native": "^0.35.0"
   },
