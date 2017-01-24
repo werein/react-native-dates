@@ -119,7 +119,6 @@ export const Week = (props: WeekType) => {
 
   const days = [];
   const endOfWeek = startOfWeek.clone().endOf('isoweek');
-  const today = currentDate.clone().startOf('day');
 
   moment.range(startOfWeek, endOfWeek).by('days', (day: moment) => {
     const onPress = () => {
@@ -142,11 +141,10 @@ export const Week = (props: WeekType) => {
       return date && day.isSame(date);
     };
 
-    const isFutureDate = day.isSameOrAfter(today);
     const isCurrentMonth = day.month() === focusedMonth.month();
     const isBlocked = isDateBlocked(day);
     const isSelected = isDateSelected();
-    const isDisabled = !isFutureDate || !isCurrentMonth || isBlocked;
+    const isDisabled = !isCurrentMonth || isBlocked;
 
     const style = [
       styles.day,
