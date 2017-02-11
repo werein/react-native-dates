@@ -25,7 +25,7 @@ type DatesType = {
 
 ## Example
 
-In this example we disabled dates back in history and on Sundays and showed selected date bellow
+In this example we disabled dates back in history and we shows selected dates bellow
 
 ```javascript
 /**
@@ -42,6 +42,7 @@ import {
   View
 } from 'react-native';
 import Dates from 'react-native-dates';
+import moment from 'moment';
 
 export default class ReactNativeDatesDemo extends Component {
   state = {
@@ -54,7 +55,7 @@ export default class ReactNativeDatesDemo extends Component {
 
   render() {
     const isDateBlocked = (date) =>
-      date.format('dddd') === 'Sunday';
+      date.isBefore(moment(), 'day');
 
     const onDatesChange = ({ startDate, endDate, focusedInput }) =>
       this.setState({ ...this.state, focus: focusedInput }, () =>
