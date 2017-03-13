@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   dayDisabledText: {
     color: 'gray'
   },
-  daySeletedText: {
+  daySelectedText: {
     color: 'rgb(252, 252, 252)'
   }
 });
@@ -153,7 +153,7 @@ export const Week = (props: WeekType) => {
     const styleText = [
       styles.dayText,
       isDisabled && styles.dayDisabledText,
-      isSelected && styles.daySeletedText
+      isSelected && styles.daySelectedText
     ];
 
     days.push(
