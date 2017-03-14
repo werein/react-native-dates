@@ -130,7 +130,7 @@ export const Week = (props: WeekType) => {
           });
         }
         onDatesChange(isPeriodBlocked ?
-          dates(end, null, focusedInput) :
+          dates(end, null, 'startDate') :
           dates(start, end, focusedInput));
       } else {
         onDatesChange({ date: day });
