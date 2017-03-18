@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   dayDisabledText: {
     color: 'gray'
   },
-  daySeletedText: {
+  daySelectedText: {
     color: 'rgb(252, 252, 252)'
   }
 });
@@ -121,9 +121,17 @@ export const Week = (props: WeekType) => {
   moment.range(startOfWeek, endOfWeek).by('days', (day: moment) => {
     const onPress = () => {
       if (range) {
+        let isPeriodBlocked = false;
         const start = focusedInput === 'startDate' ? day : startDate;
         const end = focusedInput === 'endDate' ? day : endDate;
-        onDatesChange(dates(start, end, focusedInput));
+        if (start && end) {
+          moment.range(start, end).by('days', (dayPeriod: moment) => {
+            if (isDateBlocked(dayPeriod)) isPeriodBlocked = true;
+          });
+        }
+        onDatesChange(isPeriodBlocked ?
+          dates(end, null, 'startDate') :
+          dates(start, end, focusedInput));
       } else {
         onDatesChange({ date: day });
       }
@@ -153,7 +161,7 @@ export const Week = (props: WeekType) => {
     const styleText = [
       styles.dayText,
       isDisabled && styles.dayDisabledText,
-      isSelected && styles.daySeletedText
+      isSelected && styles.daySelectedText
     ];
 
     days.push(
