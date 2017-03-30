@@ -15,7 +15,8 @@ type DatesType = {
   endDate: ?moment,
   focusedInput: 'startDate' | 'endDate',
   onDatesChange: (date: { date?: ?moment, startDate?: ?moment, endDate?: ?moment }) => void,
-  isDateBlocked: (date: moment) => boolean
+  isDateBlocked: (date: moment) => boolean,
+  onDisableClicked: (date: moment) => void
 }
 
 type MonthType = {
@@ -27,7 +28,8 @@ type MonthType = {
   currentDate: moment,
   focusedMonth: moment,
   onDatesChange: (date: { date?: ?moment, startDate?: ?moment, endDate?: ?moment }) => void,
-  isDateBlocked: (date: moment) => boolean
+  isDateBlocked: (date: moment) => boolean,
+  onDisableClicked: (date: moment) => void
 }
 
 type WeekType = {
@@ -36,10 +38,10 @@ type WeekType = {
   startDate: ?moment,
   endDate: ?moment,
   focusedInput: 'startDate' | 'endDate',
-  focusedMonth: moment,
   startOfWeek: moment,
   onDatesChange: (date: { date?: ?moment, startDate?: ?moment, endDate?: ?moment }) => void,
-  isDateBlocked: (date: moment) => boolean
+  isDateBlocked: (date: moment) => boolean,
+  onDisableClicked: (date: moment) => void
 }
 
 const styles = StyleSheet.create({
@@ -63,7 +65,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexBasis: 1,
     alignItems: 'center',
-    backgroundColor: 'rgb(248, 248, 248)',
+    backgroundColor: 'rgb(245, 245, 245)',
     margin: 1,
     padding: 10
   },
@@ -74,10 +76,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(52,120,246)'
   },
   dayText: {
-    color: 'rgb(0, 0, 0)'
+    color: 'rgb(0, 0, 0)',
+    fontWeight: '600'
   },
   dayDisabledText: {
-    color: 'gray'
+    color: 'gray',
+    opacity: 0.5,
+    fontWeight: '400'
   },
   daySelectedText: {
     color: 'rgb(252, 252, 252)'
@@ -109,10 +114,10 @@ export const Week = (props: WeekType) => {
     startDate,
     endDate,
     focusedInput,
-    focusedMonth,
     startOfWeek,
     onDatesChange,
-    isDateBlocked
+    isDateBlocked,
+    onDisableClicked
   } = props;
 
   const days = [];
@@ -120,7 +125,9 @@ export const Week = (props: WeekType) => {
 
   moment.range(startOfWeek, endOfWeek).by('days', (day: moment) => {
     const onPress = () => {
-      if (range) {
+      if (isDateBlocked(day)) {
+        onDisableClicked(day);
+      } else if (range) {
         let isPeriodBlocked = false;
         const start = focusedInput === 'startDate' ? day : startDate;
         const end = focusedInput === 'endDate' ? day : endDate;
@@ -147,20 +154,18 @@ export const Week = (props: WeekType) => {
       return date && day.isSame(date);
     };
 
-    const isCurrentMonth = day.month() === focusedMonth.month();
     const isBlocked = isDateBlocked(day);
     const isSelected = isDateSelected();
-    const isDisabled = !isCurrentMonth || isBlocked;
 
     const style = [
       styles.day,
-      isDisabled && styles.dayBlocked,
+      isBlocked && styles.dayBlocked,
       isSelected && styles.daySelected
     ];
 
     const styleText = [
       styles.dayText,
-      isDisabled && styles.dayDisabledText,
+      isBlocked && styles.dayDisabledText,
       isSelected && styles.daySelectedText
     ];
 
@@ -169,7 +174,7 @@ export const Week = (props: WeekType) => {
         key={day.date()}
         style={style}
         onPress={onPress}
-        disabled={isDisabled}
+        disabled={isBlocked && !onDisableClicked}
       >
         <Text style={styleText}>{day.date()}</Text>
       </TouchableOpacity>
@@ -191,7 +196,8 @@ export const Month = (props: MonthType) => {
     currentDate,
     focusedMonth,
     onDatesChange,
-    isDateBlocked
+    isDateBlocked,
+    onDisableClicked
   } = props;
 
   const dayNames = [];
@@ -222,6 +228,7 @@ export const Month = (props: MonthType) => {
         startOfWeek={week}
         onDatesChange={onDatesChange}
         isDateBlocked={isDateBlocked}
+        onDisableClicked={onDisableClicked}
       />
     );
   });
@@ -273,6 +280,7 @@ export default class Dates extends Component {
           focusedMonth={this.state.focusedMonth}
           onDatesChange={this.props.onDatesChange}
           isDateBlocked={this.props.isDateBlocked}
+          onDisableClicked={this.props.onDisableClicked}
         />
       </View>
     );
