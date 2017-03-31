@@ -1,6 +1,6 @@
 {
   "name": "react-native-dates",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Date and daterange picker for React Native (iOS and Android)",
   "main": "src/index.js",
   "scripts": {
