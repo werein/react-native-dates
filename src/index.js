@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet
 } from 'react-native';
-import moment from 'moment';
+import moment from 'moment/min/moment-with-locales';
 import 'moment-range';
 
 type DatesType = {
@@ -16,7 +16,9 @@ type DatesType = {
   focusedInput: 'startDate' | 'endDate',
   onDatesChange: (date: { date?: ?moment, startDate?: ?moment, endDate?: ?moment }) => void,
   isDateBlocked: (date: moment) => boolean,
-  onDisableClicked: (date: moment) => void
+  onDisableClicked: (date: moment) => void,
+  previous: ?string,
+  next: ?string
 }
 
 type MonthType = {
@@ -251,6 +253,8 @@ export default class Dates extends Component {
   props: DatesType;
 
   render() {
+    moment.locale(this.props.locale || 'en');
+
     const previousMonth = () => {
       this.setState({ focusedMonth: this.state.focusedMonth.add(-1, 'M') });
     };
@@ -263,11 +267,11 @@ export default class Dates extends Component {
       <View style={styles.calendar}>
         <View style={styles.heading}>
           <TouchableOpacity onPress={previousMonth}>
-            <Text>{'< Previous'}</Text>
+            <Text>{this.props.previous || '< Previous'}</Text>
           </TouchableOpacity>
           <Text>{this.state.focusedMonth.format('MMMM')}</Text>
           <TouchableOpacity onPress={nextMonth}>
-            <Text>{'Next >'}</Text>
+            <Text>{this.props.next || 'Next >'}</Text>
           </TouchableOpacity>
         </View>
         <Month
