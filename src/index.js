@@ -147,11 +147,11 @@ export const Week = (props: WeekType) => {
     const isDateSelected = () => {
       if (range) {
         if (startDate && endDate) {
-          return day.isSameOrAfter(startDate) && day.isSameOrBefore(endDate);
+          return day.isSameOrAfter(startDate, 'day') && day.isSameOrBefore(endDate, 'day');
         }
-        return (startDate && day.isSame(startDate)) || (endDate && day.isSame(endDate));
+        return (startDate && day.isSame(startDate, 'day')) || (endDate && day.isSame(endDate, 'day'));
       }
-      return date && day.isSame(date);
+      return date && day.isSame(date, 'day');
     };
 
     const isBlocked = isDateBlocked(day);
