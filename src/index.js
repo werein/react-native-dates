@@ -250,6 +250,16 @@ export default class Dates extends Component {
   }
   props: DatesType;
 
+  componentWillMount() {
+    const currentDate = moment(this.props.date)
+    const focusedMonth = moment(this.props.date).startOf('month')
+
+    this.setState({
+      currentDate: currentDate,
+      focusedMonth: focusedMonth
+    })
+  }
+
   render() {
     const previousMonth = () => {
       this.setState({ focusedMonth: this.state.focusedMonth.add(-1, 'M') });
