@@ -5,8 +5,9 @@ import {
   TouchableOpacity,
   StyleSheet
 } from 'react-native';
-import moment from 'moment';
-import 'moment-range';
+const Moment = require('moment');
+const MomentRange = require('moment-range');
+const moment = MomentRange.extendMoment(Moment);
 
 type DatesType = {
   range: boolean,
