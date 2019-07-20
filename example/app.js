@@ -5,6 +5,7 @@ import {
   Text,
   View
 } from 'react-native';
+import moment from 'moment'
 import Dates from 'react-native-dates';
 
 export default class App extends Component {
@@ -17,32 +18,33 @@ export default class App extends Component {
 
   render() {
     const isDateBlocked = (date) =>
-      date.format('dddd') === 'Sunday';
+        date.format('dddd') === 'Sunday';
 
     const onDatesChange = ({ startDate, endDate, focusedInput }) =>
-      this.setState({ ...this.state, focus: focusedInput }, () =>
-        this.setState({ ...this.state, startDate, endDate })
-      );
+        this.setState({ ...this.state, focus: focusedInput }, () =>
+            this.setState({ ...this.state, startDate, endDate })
+        );
 
     const onDateChange = ({ date }) =>
-      this.setState({ ...this.state, date });
+        this.setState({ ...this.state, date });
 
 
     return (
-      <View style={styles.container}>
-        <Dates
-          onDatesChange={onDatesChange}
-          isDateBlocked={isDateBlocked}
-          startDate={this.state.startDate}
-          endDate={this.state.endDate}
-          focusedInput={this.state.focus}
-          range
-        />
+        <View style={styles.container}>
+          <Dates
+              onDatesChange={onDatesChange}
+              isDateBlocked={isDateBlocked}
+              startDate={this.state.startDate}
+              endDate={this.state.endDate}
+              focusedInput={this.state.focus}
+              focusedMonth={ moment('05/09/2030','DD/MM/YYYY')} //optional
+              range
+          />
 
-      {this.state.date && <Text style={styles.date}>{this.state.date && this.state.date.format('LL')}</Text>}
-      <Text style={[styles.date, this.state.focus === 'startDate' && styles.focused]}>{this.state.startDate && this.state.startDate.format('LL')}</Text>
-      <Text style={[styles.date, this.state.focus === 'endDate' && styles.focused]}>{this.state.endDate && this.state.endDate.format('LL')}</Text>
-      </View>
+          {this.state.date && <Text style={styles.date}>{this.state.date && this.state.date.format('LL')}</Text>}
+          <Text style={[styles.date, this.state.focus === 'startDate' && styles.focused]}>{this.state.startDate && this.state.startDate.format('LL')}</Text>
+          <Text style={[styles.date, this.state.focus === 'endDate' && styles.focused]}>{this.state.endDate && this.state.endDate.format('LL')}</Text>
+        </View>
     );
   }
 }

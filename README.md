@@ -74,6 +74,7 @@ export default class ReactNativeDatesDemo extends Component {
           startDate={this.state.startDate}
           endDate={this.state.endDate}
           focusedInput={this.state.focus}
+          focusedMonth={ moment('05/09/2030','DD/MM/YYYY')}
           range
         />
 
