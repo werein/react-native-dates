@@ -5170,7 +5170,7 @@ react-is@^16.8.1, react-is@^16.8.4, react-is@^16.8.6:
   integrity sha512-aUk3bHfZ2bRSVFFbbeVS4i+lNPZr3/WM5jT2J5omUVV1zzcs1nAaf3l51ctA5FFvCRbhrH0bdAsRRQddFJZPtA==
 
 "react-native-dates@file:..":
-  version "2.0.4"
+  version "2.1.0"
   dependencies:
     moment "^2.24.0"
     moment-range "4.0.2"

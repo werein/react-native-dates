@@ -18,7 +18,8 @@ type DatesType = {
   focusedInput: 'startDate' | 'endDate',
   onDatesChange: (date: { date?: ?moment, startDate?: ?moment, endDate?: ?moment }) => void,
   isDateBlocked: (date: moment) => boolean,
-  onDisableClicked: (date: moment) => void
+  onDisableClicked: (date: moment) => void,
+  focusedMonth:?moment
 }
 
 type MonthType = {
@@ -125,9 +126,8 @@ export const Week = (props: WeekType) => {
   const days = [];
   const endOfWeek = startOfWeek.clone().endOf('isoweek');
 
-  const getDayRange = moment.range(startOfWeek, endOfWeek)
+  const getDayRange = moment.range(startOfWeek, endOfWeek);
   Array.from(getDayRange.by('days')).map((day:moment) => {
-
     const onPress = () => {
       if (isDateBlocked(day)) {
         onDisableClicked(day);
@@ -174,16 +174,16 @@ export const Week = (props: WeekType) => {
     ];
 
     days.push(
-        <TouchableOpacity
-            key={day.date()}
-            style={style}
-            onPress={onPress}
-            disabled={isBlocked && !onDisableClicked}
-        >
-          <Text style={styleText}>{day.date()}</Text>
-        </TouchableOpacity>
+      <TouchableOpacity
+        key={day.date()}
+        style={style}
+        onPress={onPress}
+        disabled={isBlocked && !onDisableClicked}
+      >
+        <Text style={styleText}>{day.date()}</Text>
+      </TouchableOpacity>
     );
-
+    return null;
   });
 
   return (
@@ -211,32 +211,34 @@ export const Month = (props: MonthType) => {
   const endOfMonth = focusedMonth.clone().endOf('month');
   const weekRange = moment.range(currentDate.clone().startOf('isoweek'), currentDate.clone().endOf('isoweek'));
 
-  Array.from(weekRange.by('days')).map((day: moment) =>{
+  Array.from(weekRange.by('days')).map((day: moment) => {
     dayNames.push(
-        <Text key={day.date()} style={styles.dayName}>
-          {day.format('ddd')}
-        </Text>
+      <Text key={day.date()} style={styles.dayName}>
+        {day.format('ddd')}
+      </Text>
     );
+    return null;
   });
 
   const getMonthRange = moment.range(startOfMonth, endOfMonth);
   Array.from(getMonthRange.by('weeks')).map((week: moment) => {
     weeks.push(
-        <Week
-            key={week}
-            range={range}
-            date={date}
-            startDate={startDate}
-            endDate={endDate}
-            focusedInput={focusedInput}
-            currentDate={currentDate}
-            focusedMonth={focusedMonth}
-            startOfWeek={week}
-            onDatesChange={onDatesChange}
-            isDateBlocked={isDateBlocked}
-            onDisableClicked={onDisableClicked}
-        />
+      <Week
+        key={week}
+        range={range}
+        date={date}
+        startDate={startDate}
+        endDate={endDate}
+        focusedInput={focusedInput}
+        currentDate={currentDate}
+        focusedMonth={focusedMonth}
+        startOfWeek={week}
+        onDatesChange={onDatesChange}
+        isDateBlocked={isDateBlocked}
+        onDisableClicked={onDisableClicked}
+      />
     );
+    return null;
   });
 
 
@@ -257,15 +259,15 @@ export default class Dates extends Component {
   }
 
   componentDidMount() {
-    this.setFocusedMonth()
+    this.setFocusedMonth();
   }
 
-  setFocusedMonth = () =>{
-    const {focusedMonth} = this.props;
-    if(focusedMonth){
-      this.setState({  focusedMonth:moment(focusedMonth,'MMMM D, YYYY h:mm a').startOf('month') });
+  setFocusedMonth = () => {
+    const { focusedMonth } = this.props;
+    if (focusedMonth) {
+      this.setState({ focusedMonth: moment(focusedMonth, 'MMMM D, YYYY h:mm a').startOf('month') });
     }
-  }
+  };
 
   props: DatesType;
 
