@@ -5,8 +5,10 @@ import {
   TouchableOpacity,
   StyleSheet
 } from 'react-native';
-import moment from 'moment';
-import 'moment-range';
+import Moment from 'moment';
+import { extendMoment } from 'moment-range';
+
+const moment = extendMoment(Moment);
 
 type DatesType = {
   range: boolean,
@@ -16,7 +18,8 @@ type DatesType = {
   focusedInput: 'startDate' | 'endDate',
   onDatesChange: (date: { date?: ?moment, startDate?: ?moment, endDate?: ?moment }) => void,
   isDateBlocked: (date: moment) => boolean,
-  onDisableClicked: (date: moment) => void
+  onDisableClicked: (date: moment) => void,
+  focusedMonth:?moment
 }
 
 type MonthType = {
@@ -123,7 +126,8 @@ export const Week = (props: WeekType) => {
   const days = [];
   const endOfWeek = startOfWeek.clone().endOf('isoweek');
 
-  moment.range(startOfWeek, endOfWeek).by('days', (day: moment) => {
+  const getDayRange = moment.range(startOfWeek, endOfWeek);
+  Array.from(getDayRange.by('days')).map((day:moment) => {
     const onPress = () => {
       if (isDateBlocked(day)) {
         onDisableClicked(day);
@@ -137,8 +141,8 @@ export const Week = (props: WeekType) => {
           });
         }
         onDatesChange(isPeriodBlocked ?
-          dates(end, null, 'startDate') :
-          dates(start, end, focusedInput));
+            dates(end, null, 'startDate') :
+            dates(start, end, focusedInput));
       } else {
         onDatesChange({ date: day });
       }
@@ -179,6 +183,7 @@ export const Week = (props: WeekType) => {
         <Text style={styleText}>{day.date()}</Text>
       </TouchableOpacity>
     );
+    return null;
   });
 
   return (
@@ -206,15 +211,17 @@ export const Month = (props: MonthType) => {
   const endOfMonth = focusedMonth.clone().endOf('month');
   const weekRange = moment.range(currentDate.clone().startOf('isoweek'), currentDate.clone().endOf('isoweek'));
 
-  weekRange.by('days', (day: moment) => {
+  Array.from(weekRange.by('days')).map((day: moment) => {
     dayNames.push(
       <Text key={day.date()} style={styles.dayName}>
         {day.format('ddd')}
       </Text>
     );
+    return null;
   });
 
-  moment.range(startOfMonth, endOfMonth).by('weeks', (week: moment) => {
+  const getMonthRange = moment.range(startOfMonth, endOfMonth);
+  Array.from(getMonthRange.by('weeks')).map((week: moment) => {
     weeks.push(
       <Week
         key={week}
@@ -231,7 +238,9 @@ export const Month = (props: MonthType) => {
         onDisableClicked={onDisableClicked}
       />
     );
+    return null;
   });
+
 
   return (
     <View style={styles.month}>
@@ -249,12 +258,16 @@ export default class Dates extends Component {
     focusedMonth: moment().startOf('month')
   }
 
-  componentWillMount() {
-    const currentDate = moment(this.props.date);
-    const focusedMonth = moment(this.props.date).startOf('month');
-
-    this.setState({ currentDate, focusedMonth });
+  componentDidMount() {
+    this.setFocusedMonth();
   }
+
+  setFocusedMonth = () => {
+    const { focusedMonth } = this.props;
+    if (focusedMonth) {
+      this.setState({ focusedMonth: moment(focusedMonth, 'MMMM D, YYYY h:mm a').startOf('month') });
+    }
+  };
 
   props: DatesType;
 
