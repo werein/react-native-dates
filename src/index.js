@@ -47,7 +47,7 @@ type WeekType = {
   onDisableClicked: (date: moment) => void
 }
 
-const styles = StyleSheet.create({
+const defaultStyles = StyleSheet.create({
   calendar: {
     backgroundColor: 'rgb(255, 255, 255)'
   },
@@ -120,7 +120,8 @@ export const Week = (props: WeekType) => {
     startOfWeek,
     onDatesChange,
     isDateBlocked,
-    onDisableClicked
+    onDisableClicked,
+    styles
   } = props;
 
   const days = [];
@@ -202,7 +203,8 @@ export const Month = (props: MonthType) => {
     focusedMonth,
     onDatesChange,
     isDateBlocked,
-    onDisableClicked
+    onDisableClicked,
+    styles
   } = props;
 
   const dayNames = [];
@@ -236,6 +238,7 @@ export const Month = (props: MonthType) => {
         onDatesChange={onDatesChange}
         isDateBlocked={isDateBlocked}
         onDisableClicked={onDisableClicked}
+        styles={styles}
       />
     );
     return null;
@@ -279,6 +282,8 @@ export default class Dates extends Component {
     const nextMonth = () => {
       this.setState({ focusedMonth: this.state.focusedMonth.add(1, 'M') });
     };
+    
+    const styles = {...defaultStyles, ...(this.props.styles || {})};
 
     return (
       <View style={styles.calendar}>
@@ -302,6 +307,7 @@ export default class Dates extends Component {
           onDatesChange={this.props.onDatesChange}
           isDateBlocked={this.props.isDateBlocked}
           onDisableClicked={this.props.onDisableClicked}
+          styles={styles}
         />
       </View>
     );
