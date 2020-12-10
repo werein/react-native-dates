@@ -13,7 +13,6 @@ const moment = extendMoment(Moment);
 type DatesType = {
   range: boolean,
   date: ?moment,
-  locale?: moment.Locale,
   startDate: ?moment,
   endDate: ?moment,
   focusedInput: 'startDate' | 'endDate',
@@ -21,6 +20,9 @@ type DatesType = {
   isDateBlocked: (date: moment) => boolean,
   onDisableClicked: (date: moment) => void,
   focusedMonth:?moment
+  locale?: moment.Locale,
+  previousLabel: React.ReactNode,
+  nextLabel: React.ReactNode,
 }
 
 type MonthType = {
@@ -257,10 +259,10 @@ export const Month = (props: MonthType) => {
 };
 
 export default class Dates extends Component {
+
   state = {
     currentDate: moment(),
     focusedMonth: moment().startOf('month'),
-    locale: 'en'
   }
 
   componentDidMount() {
@@ -292,10 +294,17 @@ export default class Dates extends Component {
       <View style={styles.calendar}>
         <View style={styles.heading}>
           <TouchableOpacity onPress={previousMonth}>
-            <Text>{'< Previous'}</Text>
+            {typeof previousLabel === 'string' ? 
+            <Text>{previousLabel}</Text>:
+            previousLabel
+          }
           </TouchableOpacity>
           <Text>{this.state.focusedMonth.format('MMMM')}</Text>
           <TouchableOpacity onPress={nextMonth}>
+            {typeof nextLabel === 'string' ? 
+            <Text>{nextLabel}</Text>:
+            nextLabel
+          }
             <Text>{'Next >'}</Text>
           </TouchableOpacity>
         </View>
@@ -315,4 +324,10 @@ export default class Dates extends Component {
       </View>
     );
   }
+}
+
+Dates.defaultProps = {
+  previousLabel: '< Previous',
+  nextLabel: 'Next >',
+  locale: 'en'
 }
