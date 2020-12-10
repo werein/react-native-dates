@@ -207,6 +207,7 @@ export const Month = (props: MonthType) => {
     onDatesChange,
     isDateBlocked,
     onDisableClicked,
+    locale,
     styles
   } = props;
 
@@ -214,7 +215,7 @@ export const Month = (props: MonthType) => {
   const weeks = [];
   const startOfMonth = focusedMonth.clone().startOf('month').startOf('isoweek');
   const endOfMonth = focusedMonth.clone().endOf('month');
-  const weekRange = moment.range(currentDate.clone().startOf('isoweek'), currentDate.clone().endOf('isoweek'));
+  const weekRange = moment.range(currentDate.clone().startOf('isoweek'), currentDate.clone().endOf('isoweek')).locale(locale);
 
   Array.from(weekRange.by('days')).map((day: moment) => {
     dayNames.push(
@@ -261,7 +262,7 @@ export const Month = (props: MonthType) => {
 export default class Dates extends Component {
 
   state = {
-    currentDate: moment(),
+    currentDate: moment().locale(this.props.locale),
     focusedMonth: moment().startOf('month'),
   }
 
@@ -290,7 +291,7 @@ export default class Dates extends Component {
     
     const styles = {...defaultStyles, ...(this.props.styles || {})};
 
-    const {previousLabel, nextLabel} = this.props; 
+    const {previousLabel, nextLabel, locale} = this.props; 
 
     return (
       <View style={styles.calendar}>
@@ -310,6 +311,7 @@ export default class Dates extends Component {
           </TouchableOpacity>
         </View>
         <Month
+          locale={locale}
           range={this.props.range}
           date={this.props.date}
           startDate={this.props.startDate}
