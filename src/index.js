@@ -215,9 +215,10 @@ export const Month = (props: MonthType) => {
   const weeks = [];
   const startOfMonth = focusedMonth.clone().startOf('month').startOf('isoweek');
   const endOfMonth = focusedMonth.clone().endOf('month');
-  const weekRange = moment.range(currentDate.clone().startOf('isoweek'), currentDate.clone().endOf('isoweek')).locale(locale);
+  const weekRange = moment.range(currentDate.clone().startOf('isoweek'), currentDate.clone().endOf('isoweek'));
 
   Array.from(weekRange.by('days')).map((day: moment) => {
+    day.locale(locale)
     dayNames.push(
       <Text key={day.date()} style={styles.dayName}>
         {day.format('ddd')}
@@ -228,6 +229,7 @@ export const Month = (props: MonthType) => {
 
   const getMonthRange = moment.range(startOfMonth, endOfMonth);
   Array.from(getMonthRange.by('weeks')).map((week: moment) => {
+    week.locale(locale)
     weeks.push(
       <Week
         key={week}
