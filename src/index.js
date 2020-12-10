@@ -19,7 +19,10 @@ type DatesType = {
   onDatesChange: (date: { date?: ?moment, startDate?: ?moment, endDate?: ?moment }) => void,
   isDateBlocked: (date: moment) => boolean,
   onDisableClicked: (date: moment) => void,
-  focusedMonth:?moment
+  focusedMonth:?moment,
+  locale?: moment.Locale,
+  previousLabel: React.ReactNode,
+  nextLabel: React.ReactNode,
 }
 
 type MonthType = {
@@ -204,6 +207,7 @@ export const Month = (props: MonthType) => {
     onDatesChange,
     isDateBlocked,
     onDisableClicked,
+    locale,
     styles
   } = props;
 
@@ -214,6 +218,7 @@ export const Month = (props: MonthType) => {
   const weekRange = moment.range(currentDate.clone().startOf('isoweek'), currentDate.clone().endOf('isoweek'));
 
   Array.from(weekRange.by('days')).map((day: moment) => {
+    day.locale(locale)
     dayNames.push(
       <Text key={day.date()} style={styles.dayName}>
         {day.format('ddd')}
@@ -224,6 +229,7 @@ export const Month = (props: MonthType) => {
 
   const getMonthRange = moment.range(startOfMonth, endOfMonth);
   Array.from(getMonthRange.by('weeks')).map((week: moment) => {
+    week.locale(locale)
     weeks.push(
       <Week
         key={week}
@@ -256,12 +262,14 @@ export const Month = (props: MonthType) => {
 };
 
 export default class Dates extends Component {
+
   state = {
-    currentDate: moment(),
-    focusedMonth: moment().startOf('month')
+    currentDate: moment().locale(this.props.locale),
+    focusedMonth: moment().startOf('month'),
   }
 
   componentDidMount() {
+    moment.locale(this.props.locale)
     this.setFocusedMonth();
   }
 
@@ -285,18 +293,27 @@ export default class Dates extends Component {
     
     const styles = {...defaultStyles, ...(this.props.styles || {})};
 
+    const {previousLabel, nextLabel, locale} = this.props; 
+
     return (
       <View style={styles.calendar}>
         <View style={styles.heading}>
           <TouchableOpacity onPress={previousMonth}>
-            <Text>{'< Previous'}</Text>
+            {typeof previousLabel === 'string' ? 
+            <Text>{previousLabel}</Text>:
+            previousLabel
+          }
           </TouchableOpacity>
           <Text>{this.state.focusedMonth.format('MMMM')}</Text>
           <TouchableOpacity onPress={nextMonth}>
-            <Text>{'Next >'}</Text>
+            {typeof nextLabel === 'string' ? 
+            <Text>{nextLabel}</Text>:
+            nextLabel
+          }
           </TouchableOpacity>
         </View>
         <Month
+          locale={locale}
           range={this.props.range}
           date={this.props.date}
           startDate={this.props.startDate}
@@ -312,4 +329,10 @@ export default class Dates extends Component {
       </View>
     );
   }
+}
+
+Dates.defaultProps = {
+  previousLabel: '< Previous',
+  nextLabel: 'Next >',
+  locale: 'en'
 }
