@@ -305,7 +305,6 @@ export default class Dates extends Component {
             <Text>{nextLabel}</Text>:
             nextLabel
           }
-            <Text>{'Next >'}</Text>
           </TouchableOpacity>
         </View>
         <Month
