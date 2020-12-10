@@ -19,7 +19,7 @@ type DatesType = {
   onDatesChange: (date: { date?: ?moment, startDate?: ?moment, endDate?: ?moment }) => void,
   isDateBlocked: (date: moment) => boolean,
   onDisableClicked: (date: moment) => void,
-  focusedMonth:?moment
+  focusedMonth:?moment,
   locale?: moment.Locale,
   previousLabel: React.ReactNode,
   nextLabel: React.ReactNode,
