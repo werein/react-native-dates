@@ -13,6 +13,7 @@ const moment = extendMoment(Moment);
 type DatesType = {
   range: boolean,
   date: ?moment,
+  locale?: moment.Locale,
   startDate: ?moment,
   endDate: ?moment,
   focusedInput: 'startDate' | 'endDate',
@@ -258,10 +259,12 @@ export const Month = (props: MonthType) => {
 export default class Dates extends Component {
   state = {
     currentDate: moment(),
-    focusedMonth: moment().startOf('month')
+    focusedMonth: moment().startOf('month'),
+    locale: 'en'
   }
 
   componentDidMount() {
+    moment.locale(this.props.locale)
     this.setFocusedMonth();
   }
 
