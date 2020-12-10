@@ -290,6 +290,8 @@ export default class Dates extends Component {
     
     const styles = {...defaultStyles, ...(this.props.styles || {})};
 
+    const {previousLabel, nextLabel} = this.props; 
+
     return (
       <View style={styles.calendar}>
         <View style={styles.heading}>
