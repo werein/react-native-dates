@@ -22,6 +22,11 @@ type DatesType = {
   focusedMonth:?moment,
   weekHeader?: {
     dayFormat?: string
+  },
+  header?: {
+    renderLeftLabel?: Function,
+    renderCenterLabel?: moment => void,
+    renderRightLabel?: Function,
   }
 }
 
@@ -293,6 +298,7 @@ export default class Dates extends Component {
   props: DatesType;
 
   render() {
+    const { header = {} } = this.props;
     const previousMonth = () => {
       this.setState({ focusedMonth: this.state.focusedMonth.add(-1, 'M') });
     };
@@ -307,11 +313,14 @@ export default class Dates extends Component {
       <View style={styles.calendar}>
         <View style={styles.heading}>
           <TouchableOpacity onPress={previousMonth}>
-            <Text>{'< Previous'}</Text>
+            {header.renderLeftLabel ? header.renderLeftLabel() : <Text>{'< Previous'}</Text>}
           </TouchableOpacity>
-          <Text>{this.state.focusedMonth.format('MMMM')}</Text>
+          {header.renderCenterLabel
+            ? header.renderCenterLabel(this.state.focusedMonth)
+            : <Text>{this.state.focusedMonth.format('MMMM')}</Text>
+          }
           <TouchableOpacity onPress={nextMonth}>
-            <Text>{'Next >'}</Text>
+            {header.renderRightLabel ? header.renderRightLabel() : <Text>{'Next >'}</Text>}
           </TouchableOpacity>
         </View>
         <Month

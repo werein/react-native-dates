@@ -16,6 +16,11 @@ type DatesType = {
   isDateBlocked: (date: moment) => boolean
   weekHeader?: {
     dayFormat?: string
+  },
+  header?: {
+    renderLeftLabel?: Function,
+    renderCenterLabel?: moment => void,
+    renderRightLabel?: Function,
   }
 }
 ```
