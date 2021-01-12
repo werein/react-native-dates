@@ -89,6 +89,12 @@ const defaultStyles = StyleSheet.create({
   },
   daySelectedText: {
     color: 'rgb(252, 252, 252)'
+  },
+  dayCurrent: {
+
+  },
+  dayCurrentText: {
+
   }
 });
 
@@ -158,19 +164,23 @@ export const Week = (props: WeekType) => {
       }
       return date && day.isSame(date, 'day');
     };
+    const isCurrentDate = date => moment().isSame(date, 'day');
 
     const isBlocked = isDateBlocked(day);
     const isSelected = isDateSelected();
+    const isCurrent = isCurrentDate(day);
 
     const style = [
       styles.day,
       isBlocked && styles.dayBlocked,
+      isCurrent && styles.dayCurrent,
       isSelected && styles.daySelected
     ];
 
     const styleText = [
       styles.dayText,
       isBlocked && styles.dayDisabledText,
+      isCurrent && styles.dayCurrentText,
       isSelected && styles.daySelectedText
     ];
 
@@ -282,7 +292,7 @@ export default class Dates extends Component {
     const nextMonth = () => {
       this.setState({ focusedMonth: this.state.focusedMonth.add(1, 'M') });
     };
-    
+
     const styles = {...defaultStyles, ...(this.props.styles || {})};
 
     return (
