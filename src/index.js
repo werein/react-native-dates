@@ -19,7 +19,10 @@ type DatesType = {
   onDatesChange: (date: { date?: ?moment, startDate?: ?moment, endDate?: ?moment }) => void,
   isDateBlocked: (date: moment) => boolean,
   onDisableClicked: (date: moment) => void,
-  focusedMonth:?moment
+  focusedMonth:?moment,
+  weekHeader?: {
+    dayFormat?: string
+  }
 }
 
 type MonthType = {
@@ -32,7 +35,10 @@ type MonthType = {
   focusedMonth: moment,
   onDatesChange: (date: { date?: ?moment, startDate?: ?moment, endDate?: ?moment }) => void,
   isDateBlocked: (date: moment) => boolean,
-  onDisableClicked: (date: moment) => void
+  onDisableClicked: (date: moment) => void,
+  weekHeader?: {
+    dayFormat?: string
+  }
 }
 
 type WeekType = {
@@ -214,8 +220,10 @@ export const Month = (props: MonthType) => {
     onDatesChange,
     isDateBlocked,
     onDisableClicked,
+    weekHeader,
     styles
   } = props;
+  const { dayFormat = 'ddd' } = weekHeader || {};
 
   const dayNames = [];
   const weeks = [];
@@ -226,7 +234,7 @@ export const Month = (props: MonthType) => {
   Array.from(weekRange.by('days')).map((day: moment) => {
     dayNames.push(
       <Text key={day.date()} style={styles.dayName}>
-        {day.format('ddd')}
+        {day.format(dayFormat)}
       </Text>
     );
     return null;
@@ -318,6 +326,7 @@ export default class Dates extends Component {
           isDateBlocked={this.props.isDateBlocked}
           onDisableClicked={this.props.onDisableClicked}
           styles={styles}
+          weekHeader={this.props.weekHeader}
         />
       </View>
     );

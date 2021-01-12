@@ -14,6 +14,9 @@ type DatesType = {
   focusedInput: 'startDate' | 'endDate',
   onDatesChange: (date: { date?: ?moment, startDate?: ?moment, endDate?: ?moment }) => void,
   isDateBlocked: (date: moment) => boolean
+  weekHeader?: {
+    dayFormat?: string
+  }
 }
 ```
 
