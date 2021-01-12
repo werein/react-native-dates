@@ -27,7 +27,8 @@ type DatesType = {
     renderLeftLabel?: Function,
     renderCenterLabel?: moment => void,
     renderRightLabel?: Function,
-  }
+  },
+  hideDifferentMonthDays: boolean,
 }
 
 type MonthType = {
@@ -138,6 +139,8 @@ export const Week = (props: WeekType) => {
     onDatesChange,
     isDateBlocked,
     onDisableClicked,
+    hideDifferentMonthDays,
+    focusedMonth,
     styles
   } = props;
 
@@ -176,10 +179,12 @@ export const Week = (props: WeekType) => {
       return date && day.isSame(date, 'day');
     };
     const isCurrentDate = date => moment().isSame(date, 'day');
+    const isCurrentMount = (date, mounth) => moment(mounth).isSame(date, 'month');
 
     const isBlocked = isDateBlocked(day);
     const isSelected = isDateSelected();
     const isCurrent = isCurrentDate(day);
+    const isHideDate = hideDifferentMonthDays ? !isCurrentMount(day, focusedMonth) : false;
 
     const style = [
       styles.day,
@@ -200,9 +205,9 @@ export const Week = (props: WeekType) => {
         key={day.date()}
         style={style}
         onPress={onPress}
-        disabled={isBlocked && !onDisableClicked}
+        disabled={isHideDate || (isBlocked && !onDisableClicked)}
       >
-        <Text style={styleText}>{day.date()}</Text>
+        {!isHideDate ? <Text style={styleText}>{day.date()}</Text> : null}
       </TouchableOpacity>
     );
     return null;
@@ -226,6 +231,7 @@ export const Month = (props: MonthType) => {
     isDateBlocked,
     onDisableClicked,
     weekHeader,
+    hideDifferentMonthDays,
     styles
   } = props;
   const { dayFormat = 'ddd' } = weekHeader || {};
@@ -261,6 +267,7 @@ export const Month = (props: MonthType) => {
         onDatesChange={onDatesChange}
         isDateBlocked={isDateBlocked}
         onDisableClicked={onDisableClicked}
+        hideDifferentMonthDays={hideDifferentMonthDays}
         styles={styles}
       />
     );
@@ -336,6 +343,7 @@ export default class Dates extends Component {
           onDisableClicked={this.props.onDisableClicked}
           styles={styles}
           weekHeader={this.props.weekHeader}
+          hideDifferentMonthDays={this.props.hideDifferentMonthDays}
         />
       </View>
     );

@@ -21,7 +21,8 @@ type DatesType = {
     renderLeftLabel?: Function,
     renderCenterLabel?: moment => void,
     renderRightLabel?: Function,
-  }
+  },
+  hideDifferentMonthDays: boolean
 }
 ```
 
