@@ -20,15 +20,14 @@ type DatesType = {
   isDateBlocked: (date: moment) => boolean,
   onDisableClicked: (date: moment) => void,
   focusedMonth:?moment,
-  weekHeader?: {
-    dayFormat?: string
-  },
+  weekHeader?: Object,
   header?: {
     renderLeftLabel?: Function,
     renderCenterLabel?: moment => void,
     renderRightLabel?: Function,
   },
-  hideDifferentMonthDays: boolean,
+  hideDifferentMonthDays?: boolean,
+  styles?: string
 }
 
 type MonthType = {
@@ -44,7 +43,9 @@ type MonthType = {
   onDisableClicked: (date: moment) => void,
   weekHeader?: {
     dayFormat?: string
-  }
+  },
+  hideDifferentMonthDays?: boolean,
+  styles?: string
 }
 
 type WeekType = {
@@ -56,7 +57,10 @@ type WeekType = {
   startOfWeek: moment,
   onDatesChange: (date: { date?: ?moment, startDate?: ?moment, endDate?: ?moment }) => void,
   isDateBlocked: (date: moment) => boolean,
-  onDisableClicked: (date: moment) => void
+  onDisableClicked: (date: moment) => void,
+  focusedMonth: moment,
+  hideDifferentMonthDays?: boolean,
+  styles?: string
 }
 
 const defaultStyles = StyleSheet.create({
@@ -172,8 +176,8 @@ export const Week = (props: WeekType) => {
       }
       return date && day.isSame(date, 'day');
     };
-    const isCurrentDate = date => moment().isSame(date, 'day');
-    const isCurrentMount = (date, mounth) => moment(mounth).isSame(date, 'month');
+    const isCurrentDate = dateToCheck => moment().isSame(dateToCheck, 'day');
+    const isCurrentMount = (dateToCheck, month) => moment(month).isSame(dateToCheck, 'month');
 
     const isBlocked = isDateBlocked(day);
     const isSelected = isDateSelected();
@@ -212,6 +216,12 @@ export const Week = (props: WeekType) => {
   );
 };
 
+Week.defaultProps = {
+  hideDifferentMonthDays: false,
+  styles: undefined,
+};
+
+
 export const Month = (props: MonthType) => {
   const {
     range,
@@ -224,11 +234,10 @@ export const Month = (props: MonthType) => {
     onDatesChange,
     isDateBlocked,
     onDisableClicked,
-    weekHeader,
     hideDifferentMonthDays,
     styles
   } = props;
-  const { dayFormat = 'ddd' } = weekHeader || {};
+  const dayFormat = props.weekHeader ? props.weekHeader.dayFormat : 'ddd';
 
   const dayNames = [];
   const weeks = [];
@@ -279,6 +288,12 @@ export const Month = (props: MonthType) => {
   );
 };
 
+Month.defaultProps = {
+  weekHeader: undefined,
+  hideDifferentMonthDays: false,
+  styles: undefined,
+};
+
 export default class Dates extends Component {
   state = {
     currentDate: moment(),
@@ -299,7 +314,10 @@ export default class Dates extends Component {
   props: DatesType;
 
   render() {
-    const { header = {} } = this.props;
+    const renderLeftLabel = this.props.header ? this.props.header.renderLeftLabel : null;
+    const renderCenterLabel = this.props.header ? this.props.header.renderCenterLabel : null;
+    const renderRightLabel = this.props.header ? this.props.header.renderRightLabel : null;
+
     const previousMonth = () => {
       this.setState({ focusedMonth: this.state.focusedMonth.add(-1, 'M') });
     };
@@ -308,20 +326,20 @@ export default class Dates extends Component {
       this.setState({ focusedMonth: this.state.focusedMonth.add(1, 'M') });
     };
 
-    const styles = {...defaultStyles, ...(this.props.styles || {})};
+    const styles = { ...defaultStyles, ...(this.props.styles || {}) };
 
     return (
       <View style={styles.calendar}>
         <View style={styles.heading}>
           <TouchableOpacity onPress={previousMonth}>
-            {header.renderLeftLabel ? header.renderLeftLabel() : <Text>{'< Previous'}</Text>}
+            {renderLeftLabel ? renderLeftLabel() : <Text>{'< Previous'}</Text>}
           </TouchableOpacity>
-          {header.renderCenterLabel
-            ? header.renderCenterLabel(this.state.focusedMonth)
+          {renderCenterLabel
+            ? renderCenterLabel(this.state.focusedMonth)
             : <Text>{this.state.focusedMonth.format('MMMM')}</Text>
           }
           <TouchableOpacity onPress={nextMonth}>
-            {header.renderRightLabel ? header.renderRightLabel() : <Text>{'Next >'}</Text>}
+            {renderRightLabel ? renderRightLabel() : <Text>{'Next >'}</Text>}
           </TouchableOpacity>
         </View>
         <Month
@@ -343,3 +361,11 @@ export default class Dates extends Component {
     );
   }
 }
+
+
+Dates.defaultProps = {
+  weekHeader: undefined,
+  header: undefined,
+  hideDifferentMonthDays: false,
+  styles: undefined,
+};
