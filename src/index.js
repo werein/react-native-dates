@@ -19,7 +19,15 @@ type DatesType = {
   onDatesChange: (date: { date?: ?moment, startDate?: ?moment, endDate?: ?moment }) => void,
   isDateBlocked: (date: moment) => boolean,
   onDisableClicked: (date: moment) => void,
-  focusedMonth:?moment
+  focusedMonth:?moment,
+  weekHeader?: Object,
+  header?: {
+    renderLeftLabel?: Function,
+    renderCenterLabel?: moment => void,
+    renderRightLabel?: Function,
+  },
+  hideDifferentMonthDays?: boolean,
+  styles?: string
 }
 
 type MonthType = {
@@ -32,7 +40,12 @@ type MonthType = {
   focusedMonth: moment,
   onDatesChange: (date: { date?: ?moment, startDate?: ?moment, endDate?: ?moment }) => void,
   isDateBlocked: (date: moment) => boolean,
-  onDisableClicked: (date: moment) => void
+  onDisableClicked: (date: moment) => void,
+  weekHeader?: {
+    dayFormat?: string
+  },
+  hideDifferentMonthDays?: boolean,
+  styles?: string
 }
 
 type WeekType = {
@@ -44,7 +57,10 @@ type WeekType = {
   startOfWeek: moment,
   onDatesChange: (date: { date?: ?moment, startDate?: ?moment, endDate?: ?moment }) => void,
   isDateBlocked: (date: moment) => boolean,
-  onDisableClicked: (date: moment) => void
+  onDisableClicked: (date: moment) => void,
+  focusedMonth: moment,
+  hideDifferentMonthDays?: boolean,
+  styles?: string
 }
 
 const defaultStyles = StyleSheet.create({
@@ -89,7 +105,7 @@ const defaultStyles = StyleSheet.create({
   },
   daySelectedText: {
     color: 'rgb(252, 252, 252)'
-  }
+  },
 });
 
 const dates = (startDate: ?moment, endDate: ?moment, focusedInput: 'startDate' | 'endDate') => {
@@ -121,6 +137,8 @@ export const Week = (props: WeekType) => {
     onDatesChange,
     isDateBlocked,
     onDisableClicked,
+    hideDifferentMonthDays,
+    focusedMonth,
     styles
   } = props;
 
@@ -158,19 +176,25 @@ export const Week = (props: WeekType) => {
       }
       return date && day.isSame(date, 'day');
     };
+    const isCurrentDate = dateToCheck => moment().isSame(dateToCheck, 'day');
+    const isCurrentMount = (dateToCheck, month) => moment(month).isSame(dateToCheck, 'month');
 
     const isBlocked = isDateBlocked(day);
     const isSelected = isDateSelected();
+    const isCurrent = isCurrentDate(day);
+    const isHideDate = hideDifferentMonthDays ? !isCurrentMount(day, focusedMonth) : false;
 
     const style = [
       styles.day,
       isBlocked && styles.dayBlocked,
+      isCurrent && styles.dayCurrent,
       isSelected && styles.daySelected
     ];
 
     const styleText = [
       styles.dayText,
       isBlocked && styles.dayDisabledText,
+      isCurrent && styles.dayCurrentText,
       isSelected && styles.daySelectedText
     ];
 
@@ -179,9 +203,9 @@ export const Week = (props: WeekType) => {
         key={day.date()}
         style={style}
         onPress={onPress}
-        disabled={isBlocked && !onDisableClicked}
+        disabled={isHideDate || (isBlocked && !onDisableClicked)}
       >
-        <Text style={styleText}>{day.date()}</Text>
+        {!isHideDate ? <Text style={styleText}>{day.date()}</Text> : null}
       </TouchableOpacity>
     );
     return null;
@@ -191,6 +215,12 @@ export const Week = (props: WeekType) => {
     <View style={styles.week}>{days}</View>
   );
 };
+
+Week.defaultProps = {
+  hideDifferentMonthDays: false,
+  styles: undefined,
+};
+
 
 export const Month = (props: MonthType) => {
   const {
@@ -204,8 +234,10 @@ export const Month = (props: MonthType) => {
     onDatesChange,
     isDateBlocked,
     onDisableClicked,
+    hideDifferentMonthDays,
     styles
   } = props;
+  const dayFormat = props.weekHeader ? props.weekHeader.dayFormat : 'ddd';
 
   const dayNames = [];
   const weeks = [];
@@ -216,7 +248,7 @@ export const Month = (props: MonthType) => {
   Array.from(weekRange.by('days')).map((day: moment) => {
     dayNames.push(
       <Text key={day.date()} style={styles.dayName}>
-        {day.format('ddd')}
+        {day.format(dayFormat)}
       </Text>
     );
     return null;
@@ -238,6 +270,7 @@ export const Month = (props: MonthType) => {
         onDatesChange={onDatesChange}
         isDateBlocked={isDateBlocked}
         onDisableClicked={onDisableClicked}
+        hideDifferentMonthDays={hideDifferentMonthDays}
         styles={styles}
       />
     );
@@ -253,6 +286,12 @@ export const Month = (props: MonthType) => {
       {weeks}
     </View>
   );
+};
+
+Month.defaultProps = {
+  weekHeader: undefined,
+  hideDifferentMonthDays: false,
+  styles: undefined,
 };
 
 export default class Dates extends Component {
@@ -275,6 +314,10 @@ export default class Dates extends Component {
   props: DatesType;
 
   render() {
+    const renderLeftLabel = this.props.header ? this.props.header.renderLeftLabel : null;
+    const renderCenterLabel = this.props.header ? this.props.header.renderCenterLabel : null;
+    const renderRightLabel = this.props.header ? this.props.header.renderRightLabel : null;
+
     const previousMonth = () => {
       this.setState({ focusedMonth: this.state.focusedMonth.add(-1, 'M') });
     };
@@ -282,18 +325,21 @@ export default class Dates extends Component {
     const nextMonth = () => {
       this.setState({ focusedMonth: this.state.focusedMonth.add(1, 'M') });
     };
-    
-    const styles = {...defaultStyles, ...(this.props.styles || {})};
+
+    const styles = { ...defaultStyles, ...(this.props.styles || {}) };
 
     return (
       <View style={styles.calendar}>
         <View style={styles.heading}>
           <TouchableOpacity onPress={previousMonth}>
-            <Text>{'< Previous'}</Text>
+            {renderLeftLabel ? renderLeftLabel() : <Text>{'< Previous'}</Text>}
           </TouchableOpacity>
-          <Text>{this.state.focusedMonth.format('MMMM')}</Text>
+          {renderCenterLabel
+            ? renderCenterLabel(this.state.focusedMonth)
+            : <Text>{this.state.focusedMonth.format('MMMM')}</Text>
+          }
           <TouchableOpacity onPress={nextMonth}>
-            <Text>{'Next >'}</Text>
+            {renderRightLabel ? renderRightLabel() : <Text>{'Next >'}</Text>}
           </TouchableOpacity>
         </View>
         <Month
@@ -308,8 +354,18 @@ export default class Dates extends Component {
           isDateBlocked={this.props.isDateBlocked}
           onDisableClicked={this.props.onDisableClicked}
           styles={styles}
+          weekHeader={this.props.weekHeader}
+          hideDifferentMonthDays={this.props.hideDifferentMonthDays}
         />
       </View>
     );
   }
 }
+
+
+Dates.defaultProps = {
+  weekHeader: undefined,
+  header: undefined,
+  hideDifferentMonthDays: false,
+  styles: undefined,
+};
